@@ -6,6 +6,10 @@
     "start": "node securevault/server.js",
     "backend": "node securevault/server.js",
     "frontend": "npm --prefix frontend run dev",
-    "build": "npm --prefix frontend run build && powershell -Command \"Copy-Item -Path 'frontend/dist/*' -Destination 'securevault/public' -Recurse -Force\""
+    "build": "npm --prefix frontend ci && npm --prefix frontend run build && mkdir -p securevault/public && cp -r frontend/dist/. securevault/public/"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
   }
 }

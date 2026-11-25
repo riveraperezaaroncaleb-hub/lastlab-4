@@ -1,0 +1,49 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD es obligatoria}
+      MYSQL_DATABASE: ${DB_NAME:?DB_NAME es obligatoria}
+    ports:
+      - "127.0.0.1:${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -h 127.0.0.1 -u root -p"$$MYSQL_ROOT_PASSWORD" --silent
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:?DB_NAME es obligatoria}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD es obligatoria}
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET es obligatoria}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?DATA_ENCRYPTION_KEY es obligatoria}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      TRUST_PROXY: "true"
+      LOG_LEVEL: ${LOG_LEVEL:-warn}
+      RATE_LIMIT_WINDOW_MINUTES: ${RATE_LIMIT_WINDOW_MINUTES:-15}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-300}
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-10}
+      RECOVERY_RATE_LIMIT_MAX: ${RECOVERY_RATE_LIMIT_MAX:-5}
+      SESSION_TTL_MINUTES: ${SESSION_TTL_MINUTES:-480}
+    ports:
+      - "${PORT:-3000}:3000"
+    command: sh -c "npx sequelize-cli db:migrate && npm start"
+
+volumes:
+  mysql_data:
