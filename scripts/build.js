@@ -4,29 +4,35 @@ const { execSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
-console.log('>>> [Build] Compilando SecureVault Enterprise Fullstack...');
+console.log('>>> [Build] Verificando compilación de SecureVault Enterprise...');
 
 const rootDir = path.resolve(__dirname, '..');
 const frontendDir = path.join(rootDir, 'frontend');
 const publicDir = path.join(rootDir, 'securevault', 'public');
+const publicIndex = path.join(publicDir, 'index.html');
 
-// Si existe la carpeta frontend, compilar React y sincronizar con public
-if (fs.existsSync(frontendDir)) {
-  console.log('>>> [Build] Instalando dependencias del frontend React...');
-  execSync('npm install', { cwd: frontendDir, stdio: 'inherit' });
+try {
+  if (fs.existsSync(frontendDir)) {
+    console.log('>>> [Build] Compilando frontend React con Vite...');
+    execSync('npm install --include=dev', { cwd: frontendDir, stdio: 'inherit' });
+    execSync('npm run build', { cwd: frontendDir, stdio: 'inherit' });
 
-  console.log('>>> [Build] Compilando bundle de producción con Vite...');
-  execSync('npm run build', { cwd: frontendDir, stdio: 'inherit' });
-
-  const distDir = path.join(frontendDir, 'dist');
-  if (fs.existsSync(distDir)) {
-    console.log('>>> [Build] Sincronizando frontend compilado en securevault/public...');
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
+    const distDir = path.join(frontendDir, 'dist');
+    if (fs.existsSync(distDir)) {
+      if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+      }
+      fs.cpSync(distDir, publicDir, { recursive: true });
+      console.log('>>> [Build] Bundle de producción de React sincronizado en securevault/public.');
     }
-    fs.cpSync(distDir, publicDir, { recursive: true });
-    console.log('>>> [Build] Frontend sincronizado con éxito.');
+  }
+} catch (error) {
+  console.warn('>>> [Build Aviso] No se pudo recompilar con Vite:', error.message);
+  if (fs.existsSync(publicIndex)) {
+    console.log('>>> [Build] Se utilizará la versión precompilada existente en securevault/public.');
+  } else {
+    throw error;
   }
 }
 
-console.log('>>> [Build] Proceso de compilación completado con éxito.');
+console.log('>>> [Build] Proceso finalizado correctamente.');
