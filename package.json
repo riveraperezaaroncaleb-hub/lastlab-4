@@ -2,14 +2,29 @@
   "name": "securevault-fullstack",
   "version": "1.0.0",
   "description": "SecureVault Enterprise - Plataforma OWASP Top 10 con Express, React y Sequelize",
+  "main": "securevault/server.js",
   "scripts": {
     "start": "node securevault/server.js",
+    "build": "node scripts/build.js",
     "backend": "node securevault/server.js",
-    "frontend": "npm --prefix frontend run dev",
-    "build": "npm --prefix frontend ci && npm --prefix frontend run build && mkdir -p securevault/public && cp -r frontend/dist/. securevault/public/"
+    "frontend": "npm --prefix frontend run dev"
+  },
+  "dependencies": {
+    "argon2": "^0.45.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "helmet": "^8.3.0",
+    "mysql2": "^3.24.6",
+    "pino": "^10.4.0",
+    "sequelize": "^6.37.8",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   },
   "engines": {
-    "node": "20.x",
-    "npm": "10.x"
+    "node": ">=20.0.0"
   }
 }

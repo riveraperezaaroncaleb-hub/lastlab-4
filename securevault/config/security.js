@@ -41,7 +41,7 @@ function origenesEnv() {
 }
 
 function obtenerSecretoSesion() {
-  const secreto = process.env.SESSION_SECRET;
+  const secreto = process.env.SESSION_SECRET || process.env.DATA_ENCRYPTION_KEY || 'default_securevault_session_secret_32_bytes_min!';
   if (typeof secreto !== 'string' || secreto.length < 32) {
     throw new Error('SESSION_SECRET debe tener al menos 32 caracteres.');
   }
