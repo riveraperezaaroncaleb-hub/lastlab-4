@@ -14,6 +14,11 @@ const seguridad = require('./middlewares/seguridadMiddleware');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const notaRoutes = require('./routes/notaRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const empresaRoutes = require('./routes/empresaRoutes');
+const operacionRoutes = require('./routes/operacionRoutes');
+const catalogoRoutes = require('./routes/catalogoRoutes');
+const iaAlertasRoutes = require('./routes/iaAlertasRoutes');
+const cumplimientoRoutes = require('./routes/cumplimientoRoutes');
 
 const app = express();
 const publicDir = path.join(__dirname, 'public');
@@ -80,6 +85,11 @@ app.get('/', (_req, res) => {
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/notas', notaRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/empresas', empresaRoutes);
+app.use('/api/operaciones', operacionRoutes);
+app.use('/api/catalogo', catalogoRoutes);
+app.use('/api/ia-alertas', iaAlertasRoutes);
+app.use('/api/cumplimiento', cumplimientoRoutes);
 
 app.use((req, res, next) => {
   if (req.method === 'GET' && !req.path.startsWith('/api') && req.path !== '/health') {
@@ -99,6 +109,8 @@ async function startServer() {
   try {
     await db.sequelize.authenticate();
     logger.info('Conexión con la base de datos verificada.');
+    await db.sequelize.sync({ alter: false });
+    logger.info('Esquema de base de datos MySQL sincronizado correctamente.');
   } catch (error) {
     logger.warn({ err: error.message }, 'Base de datos no disponible al iniciar.');
   }

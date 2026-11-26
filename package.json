@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node securevault/server.js",
     "build": "node scripts/build.js",
+    "migrate": "node scripts/migrate.js",
     "backend": "node securevault/server.js",
     "frontend": "npm --prefix frontend run dev"
   },

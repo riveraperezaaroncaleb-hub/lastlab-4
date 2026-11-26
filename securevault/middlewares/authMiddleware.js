@@ -59,7 +59,7 @@ async function autenticar(req, res, next) {
 
   try {
     const usuario = await Usuario.findByPk(sesion.id, {
-      attributes: ['id', 'nombre', 'email', 'rol', 'sesionVersion']
+      attributes: ['id', 'nombre', 'email', 'rol', 'sesionVersion', 'id_empresa']
     });
 
     if (!usuario || usuario.email.toLowerCase() !== sesion.email) {
@@ -76,7 +76,8 @@ async function autenticar(req, res, next) {
       id: usuario.id,
       nombre: usuario.nombre,
       email: usuario.email,
-      rol: usuario.rol
+      rol: usuario.rol,
+      id_empresa: usuario.id_empresa || 1
     };
     req.sesion = sesion;
 
